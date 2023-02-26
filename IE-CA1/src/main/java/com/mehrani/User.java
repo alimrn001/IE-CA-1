@@ -1,7 +1,6 @@
 package com.mehrani;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class User {
     private String username;
@@ -10,7 +9,6 @@ public class User {
     private String email;
     private String address;
     private double credit;
-
 
     void setUserData(String username_, String password_, String birthday_, String email_, String address_, double credit_, boolean isUpdate) {
         if(isUpdate)
