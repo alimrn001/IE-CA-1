@@ -11,16 +11,10 @@ public class User {
     private String address;
     private double credit;
 
-//    User(String username_, String password_, String birthday_, String email_, String address_, double credit_) {
-//        this.username = username_;
-//        this.password = password_;
-//        this.birthday = LocalDate.parse(birthday_);
-//        this.email = email_;
-//        this.address = address_;
-//        this.credit = credit_;
-//    }
+
     void setUserData(String username_, String password_, String birthday_, String email_, String address_, double credit_, boolean isUpdate) {
-        this.username = username_;
+        if(isUpdate)
+            this.username = username_;
         this.password = password_;
         this.birthday = LocalDate.parse(birthday_);
         this.email = email_;
