@@ -1,6 +1,7 @@
 package com.mehrani;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class User {
     private String username;
@@ -9,6 +10,7 @@ public class User {
     private String email;
     private String address;
     private double credit;
+    private ArrayList<Integer> buyList = new ArrayList<>();
 
     void setUserData(String username, String password, String birthday, String email, String address, double credit, boolean isUpdate) {
         if(isUpdate)
@@ -37,6 +39,18 @@ public class User {
     public void setCredit(double credit) {
         this.credit = credit;
     }
+    public void setBuyList(ArrayList<Integer> buyList) {
+        this.buyList = buyList;
+    }
+    public void addToBuyList(int commodityId) {
+        this.buyList.add(commodityId);
+    }
+    public void removeFromBuyList(int commodityId) {
+        buyList.remove(Integer.valueOf(commodityId));
+    }
+    public boolean itemExistsInBuyList(int commodityId) {
+        return buyList.contains(commodityId);
+    }
     public LocalDate getBirthday() {
         return birthday;
     }
@@ -55,5 +69,7 @@ public class User {
     public String getAddress() {
         return address;
     }
-
+    public ArrayList<Integer> getBuyList() {
+        return buyList;
+    }
 }
