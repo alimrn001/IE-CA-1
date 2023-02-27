@@ -1,5 +1,6 @@
 package com.mehrani;
 import java.util.ArrayList;
+
 public class Commodity {
     private int id;
     private String name;
@@ -9,7 +10,6 @@ public class Commodity {
     private double rating;
     private int inStock;
     private int numOfRatings;
-
 
     Commodity(int id, String name, int providerId, int price, ArrayList<String> categories, double rating, int inStock) {
         this.id = id;
@@ -48,11 +48,13 @@ public class Commodity {
     public void reduceInStock(int amount) {
         this.inStock -= amount;
     }
-    public void addNewRating(int newRating) {
+    public void addNewRating(double newRating) {
         this.rating = (((this.rating*this.numOfRatings) + newRating)/(this.numOfRatings+1));
         this.numOfRatings ++;
     }
-
+    public void updateRating(double previousRating, double newRating) {
+        this.rating += ((newRating - previousRating)/numOfRatings);
+    }
     public int getId() {
         return id;
     }
