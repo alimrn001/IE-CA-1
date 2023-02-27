@@ -8,6 +8,8 @@ public class Commodity {
     private ArrayList<String> categories; //creating a 'Category' might also be considered
     private double rating;
     private int inStock;
+    private int numOfRatings;
+
 
     Commodity(int id, String name, int providerId, int price, ArrayList<String> categories, double rating, int inStock) {
         this.id = id;
@@ -17,6 +19,7 @@ public class Commodity {
         this.categories = categories;
         this.rating = rating;
         this.inStock = inStock;
+        this.numOfRatings = 1; //a primary rating is given as function argument
     }
     public void setId(int id) {
         this.id = id;
@@ -45,6 +48,11 @@ public class Commodity {
     public void reduceInStock(int amount) {
         this.inStock -= amount;
     }
+    public void addNewRating(int newRating) {
+        this.rating = (((this.rating*this.numOfRatings) + newRating)/(this.numOfRatings+1));
+        this.numOfRatings ++;
+    }
+
     public int getId() {
         return id;
     }
