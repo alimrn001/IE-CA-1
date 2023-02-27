@@ -10,50 +10,50 @@ public class User {
     private String address;
     private double credit;
 
-    void setUserData(String username_, String password_, String birthday_, String email_, String address_, double credit_, boolean isUpdate) {
+    void setUserData(String username, String password, String birthday, String email, String address, double credit, boolean isUpdate) {
         if(isUpdate)
-            this.username = username_;
-        this.password = password_;
-        this.birthday = LocalDate.parse(birthday_);
-        this.email = email_;
-        this.address = address_;
-        this.credit = credit_;
+            this.username = username;
+        this.password = password;
+        this.birthday = LocalDate.parse(birthday);
+        this.email = email;
+        this.address = address;
+        this.credit = credit;
     }
-    void setUsername(String username_) {
-        this.username = username_;
+    void setUsername(String username) {
+        this.username = username;
     }
-    void setPassword(String password_) {
-        this.password = password_;
+    void setPassword(String password) {
+        this.password = password;
     }
-    public void setBirthday(String birthday_) {
-        this.birthday = LocalDate.parse(birthday_);
+    public void setBirthday(String birthday) {
+        this.birthday = LocalDate.parse(birthday);
     }
-    public void setEmail(String email_) {
-        this.email = email_;
+    public void setEmail(String email) {
+        this.email = email;
     }
-    public void setAddress(String address_) {
-        this.address = address_;
+    public void setAddress(String address) {
+        this.address = address;
     }
-    public void setCredit(double credit_) {
-        this.credit = credit_;
+    public void setCredit(double credit) {
+        this.credit = credit;
     }
     public LocalDate getBirthday() {
-        return this.birthday;
+        return birthday;
     }
     public double getCredit() {
-        return this.credit;
+        return credit;
     }
     public String getUsername() {
-        return this.username;
+        return username;
     }
     public String getPassword() {
-        return this.password;
+        return password;
     }
     public String getEmail() {
-        return this.email;
+        return email;
     }
     public String getAddress() {
-        return this.address;
+        return address;
     }
 
 }
