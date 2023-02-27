@@ -12,9 +12,8 @@ public class User {
     private double credit;
     private ArrayList<Integer> buyList = new ArrayList<>();
 
-    void setUserData(String username, String password, String birthday, String email, String address, double credit, boolean isUpdate) {
-        if(isUpdate)
-            this.username = username;
+    void setUserData(String username, String password, String birthday, String email, String address, double credit) {
+        this.username = username;
         this.password = password;
         this.birthday = LocalDate.parse(birthday);
         this.email = email;
