@@ -27,6 +27,12 @@ public class Provider {
     public void setRegistryDate(String registryDate) {
         this.registryDate = LocalDate.parse(registryDate);
     }
+    public void setCommoditiesNum(int commoditiesNum) {
+        this.commoditiesNum = commoditiesNum;
+    }
+    public void setAvgCommoditiesRate(double avgCommoditiesRate) {
+        this.avgCommoditiesRate = avgCommoditiesRate;
+    }
     public void updateCommoditiesData(double newCommodityRating) {
         this.commoditiesNum ++;
         this.avgCommoditiesRate = ((this.avgCommoditiesRate*(this.commoditiesNum-1)) + newCommodityRating)/(this.commoditiesNum);

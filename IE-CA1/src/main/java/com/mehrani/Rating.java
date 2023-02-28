@@ -3,9 +3,9 @@ package com.mehrani;
 public class Rating {
     private String username;
     private int commodityId;
-    private double score;
+    private int score;
 
-    public void setData(String username, int commodityId, double score) {
+    public void setData(String username, int commodityId, int score) {
         this.username = username;
         this.commodityId = commodityId;
         this.score = score;
@@ -16,13 +16,13 @@ public class Rating {
     public void setCommodityId(int commodityId) {
         this.commodityId = commodityId;
     }
-    public void setScore(double score) {
+    public void setScore(int score) {
         this.score = score;
     }
     public String getUsername() {
         return username;
     }
-    public double getScore() {
+    public int getScore() {
         return score;
     }
     public int getCommodityId() {
