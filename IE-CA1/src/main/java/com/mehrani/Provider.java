@@ -1,6 +1,7 @@
 package com.mehrani;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Provider {
     private int id;
@@ -8,6 +9,7 @@ public class Provider {
     private LocalDate registryDate;
     private int commoditiesNum;
     private double avgCommoditiesRate;
+    private ArrayList<Integer> commoditiesProvided = new ArrayList<>();
 
     public void setData(int id, String name, String registryDate, boolean update) {
         if(!update) {
@@ -33,6 +35,12 @@ public class Provider {
     public void setAvgCommoditiesRate(double avgCommoditiesRate) {
         this.avgCommoditiesRate = avgCommoditiesRate;
     }
+    public void addProvidedCommodity(int commId) {
+        commoditiesProvided.add(commId);
+    }
+    public void setCommoditiesProvided(ArrayList<Integer> commoditiesProvided) {
+        this.commoditiesProvided = commoditiesProvided;
+    }
     public void updateCommoditiesData(double newCommodityRating) {
         this.commoditiesNum ++;
         this.avgCommoditiesRate = ((this.avgCommoditiesRate*(this.commoditiesNum-1)) + newCommodityRating)/(this.commoditiesNum);
@@ -52,5 +60,7 @@ public class Provider {
     public double getAvgCommoditiesRate() {
         return avgCommoditiesRate;
     }
-
+    public ArrayList<Integer> getCommoditiesProvided() {
+        return commoditiesProvided;
+    }
 }

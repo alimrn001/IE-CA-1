@@ -1,5 +1,6 @@
 com/mehrani/Commodity.class
 com/mehrani/Provider.class
+com/mehrani/Category.class
 com/mehrani/Main.class
 com/mehrani/Error.class
 com/mehrani/Rating.class

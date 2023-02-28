@@ -20,6 +20,6 @@ public class Error {
         return "ERROR : The selected provider does not exist !";
     }
     public String getRatingOutOfRange(int rate) {
-        return "ERROR : Rating must be a number between 0 and 10 !" + "(you entered : " + rate;
+        return "ERROR : Rating must be a number between 0 and 10 !" + "(you entered : " + rate + ").";
     }
 }
