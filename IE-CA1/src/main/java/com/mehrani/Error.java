@@ -13,8 +13,8 @@ public class Error {
     public String getProductNotInStorage() {
         return "ERROR : The selected product does not exist in the storage !";
     }
-    public String getProductAlreadyExistsInObservationList() {
-        return "ERROR : The selected product already exists in your observation list !";
+    public String getProductAlreadyExistsInBuyList() {
+        return "ERROR : The selected product already exists in your buy list !";
     }
     public String getProviderNotExists() {
         return "ERROR : The selected provider does not exist !";

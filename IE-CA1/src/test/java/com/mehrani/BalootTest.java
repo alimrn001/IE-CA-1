@@ -121,11 +121,16 @@ public class BalootTest {
 
             ArrayList<String> categories = new ArrayList<>();
             categories.add("tech");
+            categories.add("techvd");
             Commodity commodity = new Commodity(3, "caj", 1, 1, categories, 3.5, 10);
             baloot.addCommodity(commodity);
             Rating rating = new Rating();
             rating.setData("user1", 3, 7);
             baloot.addRating(rating);
+
+            String res=baloot.checkUserCmd("getCommodityById {\"id\": 3}");
+
+            System.out.println("data : " + res);
         }
         catch(Exception e) {
             System.out.println(e.getMessage());

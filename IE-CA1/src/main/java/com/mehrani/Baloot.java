@@ -67,7 +67,15 @@ public class Baloot {
 //            }
         }
     }
-    public void addProvider(Provider provider) throws Exception {
+
+    public Commodity getCommodityById(int id) throws Exception{
+        if(balootCommodities.containsKey(id))
+            return balootCommodities.get(id);
+        else
+            throw new Exception(error.getCommodityNotExists());
+    }
+
+    public void addProvider(Provider provider) throws Exception { // exception is necessary ???
         balootProviders.put(provider.getId(), provider);
     }
     public void addRating(Rating rating) throws Exception {
@@ -98,7 +106,7 @@ public class Baloot {
         return balootCategorySections;
     }
 
-    public void checkUserCmd(String userInput) throws Exception {
+    public String checkUserCmd(String userInput) throws Exception {
         String userCmd, userData;
         userCmd = userInput.substring(0, userInput.indexOf(" "));
         userData = userInput.substring(userInput.indexOf(" ")+1);
@@ -127,6 +135,32 @@ public class Baloot {
             balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
             addCommodity(commodity);
         }
+        else if(userCmd.equals("getCommodityById")) {
+            Gson gson2 = new GsonBuilder().create();
+            JsonObject jObj = new Gson().fromJson(userData, JsonObject.class);
+            int commodityId = jObj.get("id").getAsInt();
+            Commodity commodity = getCommodityById(commodityId);
+            Commodity tmp = commodity;
+            String jsonRes = gson2.toJson(commodity, Commodity.class);
+            JsonObject jsonObject = JsonParser.parseString(jsonRes).getAsJsonObject();
+            jsonObject.remove("providerId");
+            jsonObject.remove("price");
+            jsonObject.remove("categories");
+            jsonObject.remove("rating");
+            jsonObject.remove("inStock");
+            jsonObject.remove("numOfRatings");
+            jsonObject.addProperty("provider", balootProviders.get(tmp.getProviderId()).getName());
+            jsonObject.addProperty("price", tmp.getPrice());
+            JsonArray ctgrs = new JsonArray();
+            for(String ctgr : tmp.getCategories()) {
+                ctgrs.add(new JsonPrimitive(ctgr));
+            }
+            jsonObject.add("categories", ctgrs);
+            jsonObject.addProperty("rating", tmp.getRating());
+            String resultData = jsonObject.toString();
+            return resultData;
+        }
+        return " ";
     }
 
 }
