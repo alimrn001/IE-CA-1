@@ -129,7 +129,9 @@ public class BalootTest {
             baloot.addRating(rating);
 
             String res=baloot.checkUserCmd("getCommodityById {\"id\": 3}");
-
+            String res2=baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 3}");
+            //String res3=baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 3}");
+            System.out.println("data 2 : " + res2);
             System.out.println("data : " + res);
         }
         catch(Exception e) {

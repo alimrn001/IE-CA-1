@@ -78,6 +78,17 @@ public class Baloot {
     public void addProvider(Provider provider) throws Exception { // exception is necessary ???
         balootProviders.put(provider.getId(), provider);
     }
+    public void addToBuyList(String username, int commodityId) throws Exception{
+        if(!userExists(username))
+            throw new Exception(error.getUserNotExists());
+        if(!commodityExists(commodityId))
+            throw new Exception(error.getCommodityNotExists());
+        else if(balootCommodities.get(commodityId).getInStock()==0)
+                throw new Exception(error.getProductNotInStorage());
+        if(balootUsers.get(username).itemExistsInBuyList(commodityId))
+            throw new Exception(error.getProductAlreadyExistsInBuyList());
+        balootUsers.get(username).addToBuyList(commodityId);
+    }
     public void addRating(Rating rating) throws Exception {
         if(rating.getScore() > 10 || rating.getScore() < 1)
             throw new Exception(error.getRatingOutOfRange(rating.getScore()));
@@ -129,11 +140,19 @@ public class Baloot {
             else
                 addProvider(provider);
         }
+        else if(userCmd.equals("addToBuyList")) {
+            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+            addToBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt());
+            return " ";
+        }
+        else if(userCmd.equals("removeFromBuyList")) {
+
+        }
         else if(userCmd.equals("addCommodity")) {
             Gson gson2 = new GsonBuilder().create();
             Commodity commodity = gson2.fromJson(userData, Commodity.class);
-            balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
             addCommodity(commodity);
+            balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
         }
         else if(userCmd.equals("getCommodityById")) {
             Gson gson2 = new GsonBuilder().create();
