@@ -6,4 +6,5 @@ com/mehrani/Error.class
 com/mehrani/Rating.class
 com/mehrani/Baloot.class
 com/mehrani/LocalDateAdapter.class
+com/mehrani/Response.class
 com/mehrani/User.class

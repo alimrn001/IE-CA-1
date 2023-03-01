@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,6 +24,9 @@ public class Baloot {
     }
     public boolean userExists(String username) {
         return balootUsers.containsKey(username);
+    }
+    public boolean categoryExists(String category) {
+        return balootCategorySections.containsKey(category);
     }
     public boolean providerExists(int providerId) {
         return balootProviders.containsKey(providerId);
@@ -62,9 +66,9 @@ public class Baloot {
                 }
                 balootCommodities.put(commodity.getId(), commodity);
             }
-//            else {
-//
-//            }
+            else {
+                throw new Exception(error.getCommodityIdExists());
+            }
         }
     }
 
@@ -78,16 +82,50 @@ public class Baloot {
     public void addProvider(Provider provider) throws Exception { // exception is necessary ???
         balootProviders.put(provider.getId(), provider);
     }
-    public void addToBuyList(String username, int commodityId) throws Exception{
+    public String addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
         if(!userExists(username))
             throw new Exception(error.getUserNotExists());
         if(!commodityExists(commodityId))
             throw new Exception(error.getCommodityNotExists());
-        else if(balootCommodities.get(commodityId).getInStock()==0)
+        else if(balootCommodities.get(commodityId).getInStock()==0 && isAdding)
                 throw new Exception(error.getProductNotInStorage());
-        if(balootUsers.get(username).itemExistsInBuyList(commodityId))
-            throw new Exception(error.getProductAlreadyExistsInBuyList());
+        if(balootUsers.get(username).itemExistsInBuyList(commodityId)) {
+            if(isAdding)
+                throw new Exception(error.getProductAlreadyExistsInBuyList());
+            else {
+                balootUsers.get(username).removeFromBuyList(commodityId);
+                balootCommodities.get(commodityId).reduceInStock(-1);
+                return " ";
+            }
+        }
+        else {
+            if(!isAdding)
+                throw new Exception(error.getProductNotInBuyList());
+        }
         balootUsers.get(username).addToBuyList(commodityId);
+        balootCommodities.get(commodityId).reduceInStock(1); //assuming adding in buyLIst reduced product number in storage, if not set to 0
+        return " ";
+    }
+    public String getCommoditiesByCategory(String category) {
+        if(!categoryExists(category))
+            return "[]";
+        ArrayList<Integer> products = balootCategorySections.get(category).getCommodities();
+        List<Commodity> objList = new ArrayList<Commodity>();
+        int cnt=0;
+        for (int i: products) {
+            balootCommodities.get(i);
+            objList.add(balootCommodities.get(i));
+            cnt++;
+        }
+        String result = new Gson().toJson(objList);
+//        for(int i = 0; i < cnt; i++)
+//            JsonParser.parseString(result).getAsJsonArray().get(i).
+
+        JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
+
+        jsonObject.remove("inStock");
+        jsonObject.remove("numOfRatings");
+        return jsonObject.toString();
     }
     public void addRating(Rating rating) throws Exception {
         if(rating.getScore() > 10 || rating.getScore() < 1)
@@ -142,11 +180,13 @@ public class Baloot {
         }
         else if(userCmd.equals("addToBuyList")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            addToBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt());
+            addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
             return " ";
         }
         else if(userCmd.equals("removeFromBuyList")) {
-
+            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+            addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
+            return " ";
         }
         else if(userCmd.equals("addCommodity")) {
             Gson gson2 = new GsonBuilder().create();
@@ -178,6 +218,10 @@ public class Baloot {
             jsonObject.addProperty("rating", tmp.getRating());
             String resultData = jsonObject.toString();
             return resultData;
+        }
+        else if(userCmd.equals("getCommoditiesByCategory")) {
+            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+            return getCommoditiesByCategory(jsonObject.get("category").getAsString());
         }
         return " ";
     }
