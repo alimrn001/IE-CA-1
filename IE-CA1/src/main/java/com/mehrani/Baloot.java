@@ -42,36 +42,57 @@ public class Baloot {
             balootCategorySections.put(categoryName, category);
         }
     }
-    public void addUser(User user) throws Exception {
+    public String addUser(User user) {
+        Response response = new Response();
+        Gson gsonProvider = new GsonBuilder().create();
         if(balootUsers.containsKey(user.getUsername())) {
             user.setBuyList(balootUsers.get(user.getUsername()).getBuyList());
             balootUsers.put(user.getUsername(), user);
+            response.setSuccess(true);
+            response.setData("");
         }
         else {
-            if((user.getUsername().contains("!")) || (user.getUsername().contains("#")) || (user.getUsername().contains("@")))
-                throw new Exception(error.getUsernameWrongChar());
-            else
+            if((user.getUsername().contains("!")) || (user.getUsername().contains("#")) || (user.getUsername().contains("@"))) {
+                response.setSuccess(false);
+                response.setData(error.getUsernameWrongChar());
+                //throw new Exception(error.getUsernameWrongChar());
+            }
+            else {
                 balootUsers.put(user.getUsername(), user);
+                response.setSuccess(true);
+                response.setData("");
+            }
         }
+        return gsonProvider.toJson(response);
     }
-    public void addCommodity(Commodity commodity) throws Exception {
-        if(!balootProviders.containsKey(commodity.getProviderId()))
-            throw new Exception(error.getProviderNotExists());
+    public String addCommodity(Commodity commodity) {
+        Gson gsonCommodity = new GsonBuilder().create();
+        Response response = new Response();
+        if(!balootProviders.containsKey(commodity.getProviderId())) {
+            response.setSuccess(false);
+            response.setData(error.getProviderNotExists());
+            //return gsonCommodity.toJson(response);
+        }
         else {
-            //balootCommodities.put(commodity.getId(), commodity);
             if(!balootCommodities.containsKey(commodity.getId())) {
                 balootProviders.get(commodity.getProviderId()).addProvidedCommodity(commodity.getId());
                 for (String ctgr : commodity.getCategories()) {
                     updateCategorySection(ctgr, commodity.getId());
                 }
                 balootCommodities.put(commodity.getId(), commodity);
+                response.setSuccess(true);
+                response.setData("");
+                balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
+                //return gsonCommodity.toJson(response);
             }
             else {
-                throw new Exception(error.getCommodityIdExists());
+                response.setSuccess(false);
+                response.setData(error.getCommodityIdExists());
+                //return gsonCommodity.toJson(response);
             }
         }
+        return gsonCommodity.toJson(response);
     }
-
     public Commodity getCommodityById(int id) throws Exception{
         if(balootCommodities.containsKey(id))
             return balootCommodities.get(id);
@@ -79,7 +100,7 @@ public class Baloot {
             throw new Exception(error.getCommodityNotExists());
     }
 
-    public String addProvider(Provider provider) throws Exception { // exception is necessary ???
+    public String addProvider(Provider provider) { // exception is necessary ???
         Response response = new Response();
         if(providerExists(provider.getId())) {
             balootProviders.get(provider.getId()).setName(provider.getName());
@@ -87,35 +108,60 @@ public class Baloot {
         }
         else
             balootProviders.put(provider.getId(), provider);
-
         response.setSuccess(true);
-        response.setData("Provider Added.");
+        response.setData("");
         Gson gsonProvider = new GsonBuilder().create();
         return gsonProvider.toJson(response);
     }
-    public String addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
-        if(!userExists(username))
-            throw new Exception(error.getUserNotExists());
-        if(!commodityExists(commodityId))
-            throw new Exception(error.getCommodityNotExists());
-        else if(balootCommodities.get(commodityId).getInStock()==0 && isAdding)
-                throw new Exception(error.getProductNotInStorage());
+    public String addRemoveBuyList(String username, int commodityId, boolean isAdding) {
+        Response response = new Response();
+        Gson gsonaddRemove = new GsonBuilder().create();
+        if(!userExists(username)) {
+            response.setSuccess(false);
+            response.setData(error.getUserNotExists());
+            return gsonaddRemove.toJson(response);
+            //throw new Exception(error.getUserNotExists());
+        }
+        if(!commodityExists(commodityId)) {
+            response.setSuccess(false);
+            response.setData(error.getCommodityNotExists());
+            return gsonaddRemove.toJson(response);
+            //throw new Exception(error.getCommodityNotExists());
+        }
+        else if(balootCommodities.get(commodityId).getInStock()==0 && isAdding) {
+            response.setSuccess(false);
+            response.setData(error.getProductNotInStorage());
+            return gsonaddRemove.toJson(response);
+            //throw new Exception(error.getProductNotInStorage());
+        }
         if(balootUsers.get(username).itemExistsInBuyList(commodityId)) {
-            if(isAdding)
-                throw new Exception(error.getProductAlreadyExistsInBuyList());
+            if(isAdding) {
+                response.setSuccess(false);
+                response.setData(error.getProductAlreadyExistsInBuyList());
+                return gsonaddRemove.toJson(response);
+                //throw new Exception(error.getProductAlreadyExistsInBuyList());
+            }
             else {
                 balootUsers.get(username).removeFromBuyList(commodityId);
                 balootCommodities.get(commodityId).reduceInStock(-1);
-                return " ";
+                response.setSuccess(true);
+                response.setData("");
+                return gsonaddRemove.toJson(response);
             }
         }
         else {
-            if(!isAdding)
-                throw new Exception(error.getProductNotInBuyList());
+            if(!isAdding) {
+                response.setSuccess(false);
+                response.setData(error.getProductNotInBuyList());
+                return gsonaddRemove.toJson(response);
+                //throw new Exception(error.getProductNotInBuyList());
+            }
         }
+        response.setSuccess(true);
+        response.setData("");
         balootUsers.get(username).addToBuyList(commodityId);
         balootCommodities.get(commodityId).reduceInStock(1); //assuming adding in buyLIst reduced product number in storage, if not set to 0
-        return " ";
+        return gsonaddRemove.toJson(response);
     }
     public String getCommoditiesByCategory(String category) {
         if(!categoryExists(category))
@@ -138,17 +184,32 @@ public class Baloot {
         jsonObject.remove("numOfRatings");
         return jsonObject.toString();
     }
-    public void addRating(Rating rating) throws Exception {
-        if(rating.getScore() > 10 || rating.getScore() < 1)
-            throw new Exception(error.getRatingOutOfRange(rating.getScore()));
-        else if(!userExists(rating.getUsername()))
-            throw new Exception(error.getUserNotExists());
-        else if(!commodityExists(rating.getCommodityId()))
-            throw new Exception(error.getCommodityNotExists());
+    public String addRating(Rating rating) {
+        Response response = new Response();
+        Gson gsonRating = new GsonBuilder().create();
+        if(rating.getScore() > 10 || rating.getScore() < 1) {
+            response.setSuccess(false);
+            response.setData(error.getRatingOutOfRange(rating.getScore()));
+            //throw new Exception(error.getRatingOutOfRange(rating.getScore()));
+        }
+        else if(!userExists(rating.getUsername())) {
+            response.setSuccess(false);
+            response.setData(error.getUserNotExists());
+            //throw new Exception(error.getUserNotExists());
+        }
+        else if(!commodityExists(rating.getCommodityId())) {
+            response.setSuccess(false);
+            response.setData(error.getCommodityNotExists());
+            //throw new Exception(error.getCommodityNotExists());
+        }
         else {
             String ratingKey = rating.getUsername() + "_" + rating.getCommodityId();
             balootRatings.put(ratingKey, rating);
+            balootCommodities.get(rating.getCommodityId()).addNewRating(rating.getScore());
+            response.setSuccess(true);
+            response.setData("");
         }
+        return gsonRating.toJson(response);
     }
     public Map<String, User> getBalootUsers() {
         return balootUsers;
@@ -173,32 +234,30 @@ public class Baloot {
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
         if(userCmd.equals("addUser")) {
             User user = gson.fromJson(userData, User.class);
-            addUser(user);
+            return addUser(user);
         }
         else if(userCmd.equals("rateCommodity")) {
             Gson gsonCmdt = new GsonBuilder().create();
             Rating rating = gsonCmdt.fromJson(userData, Rating.class);
-            addRating(rating);
+            return addRating(rating);
         }
         else if(userCmd.equals("addProvider")) {
             Provider provider = gson.fromJson(userData, Provider.class);
-            addProvider(provider);
+            return addProvider(provider);
         }
         else if(userCmd.equals("addToBuyList")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
-            return " ";
+            return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
         }
         else if(userCmd.equals("removeFromBuyList")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
-            return " ";
+            return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
         }
         else if(userCmd.equals("addCommodity")) {
             Gson gson2 = new GsonBuilder().create();
             Commodity commodity = gson2.fromJson(userData, Commodity.class);
-            addCommodity(commodity);
-            balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
+            return addCommodity(commodity);
+            //balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
         }
         else if(userCmd.equals("getCommodityById")) {
             Gson gson2 = new GsonBuilder().create();
