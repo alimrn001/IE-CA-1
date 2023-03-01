@@ -2,9 +2,7 @@ package com.mehrani;
 
 import com.google.gson.*;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +53,6 @@ public class Baloot {
             if((user.getUsername().contains("!")) || (user.getUsername().contains("#")) || (user.getUsername().contains("@"))) {
                 response.setSuccess(false);
                 response.setData(error.getUsernameWrongChar());
-                //throw new Exception(error.getUsernameWrongChar());
             }
             else {
                 balootUsers.put(user.getUsername(), user);
@@ -71,7 +68,6 @@ public class Baloot {
         if(!balootProviders.containsKey(commodity.getProviderId())) {
             response.setSuccess(false);
             response.setData(error.getProviderNotExists());
-            //return gsonCommodity.toJson(response);
         }
         else {
             if(!balootCommodities.containsKey(commodity.getId())) {
@@ -83,17 +79,15 @@ public class Baloot {
                 response.setSuccess(true);
                 response.setData("");
                 balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
-                //return gsonCommodity.toJson(response);
             }
             else {
                 response.setSuccess(false);
                 response.setData(error.getCommodityIdExists());
-                //return gsonCommodity.toJson(response);
             }
         }
         return gsonCommodity.toJson(response);
     }
-    public String addProvider(Provider provider) { // exception is necessary ???
+    public String addProvider(Provider provider) {
         Response response = new Response();
         if(providerExists(provider.getId())) {
             balootProviders.get(provider.getId()).setName(provider.getName());
@@ -113,19 +107,16 @@ public class Baloot {
             response.setSuccess(false);
             response.setData(error.getUserNotExists());
             return gsonaddRemove.toJson(response);
-            //throw new Exception(error.getUserNotExists());
         }
         if(!commodityExists(commodityId)) {
             response.setSuccess(false);
             response.setData(error.getCommodityNotExists());
             return gsonaddRemove.toJson(response);
-            //throw new Exception(error.getCommodityNotExists());
         }
         else if(balootCommodities.get(commodityId).getInStock()==0 && isAdding) {
             response.setSuccess(false);
             response.setData(error.getProductNotInStorage());
             return gsonaddRemove.toJson(response);
-            //throw new Exception(error.getProductNotInStorage());
         }
         if(balootUsers.get(username).itemExistsInBuyList(commodityId)) {
             if(isAdding) {
@@ -147,13 +138,12 @@ public class Baloot {
                 response.setSuccess(false);
                 response.setData(error.getProductNotInBuyList());
                 return gsonaddRemove.toJson(response);
-                //throw new Exception(error.getProductNotInBuyList());
             }
         }
         response.setSuccess(true);
         response.setData("");
         balootUsers.get(username).addToBuyList(commodityId);
-        balootCommodities.get(commodityId).reduceInStock(1); //assuming adding in buyLIst reduced product number in storage, if not set to 0
+        balootCommodities.get(commodityId).reduceInStock(1);
         return gsonaddRemove.toJson(response);
     }
     public String getCommoditiesByCategory(String category) {
@@ -168,9 +158,6 @@ public class Baloot {
             cnt++;
         }
         String result = new Gson().toJson(objList);
-//        for(int i = 0; i < cnt; i++)
-//            JsonParser.parseString(result).getAsJsonArray().get(i).
-
         JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
 
         jsonObject.remove("inStock");
@@ -193,8 +180,6 @@ public class Baloot {
         response.setData(gsonCommList.toJson(commListObj));
         return gsonCommList.toJson(response);
     }
-
-
     public String addRating(Rating rating) {
         Response response = new Response();
         Gson gsonRating = new GsonBuilder().create();
@@ -202,19 +187,16 @@ public class Baloot {
             response.setSuccess(false);
             response.setData(error.getRatingOutOfRange(rating.getScore()));
             return gsonRating.toJson(response);
-            //throw new Exception(error.getRatingOutOfRange(rating.getScore()));
         }
         else if(!userExists(rating.getUsername())) {
             response.setSuccess(false);
             response.setData(error.getUserNotExists());
             return gsonRating.toJson(response);
-            //throw new Exception(error.getUserNotExists());
         }
         else if(!commodityExists(rating.getCommodityId())) {
             response.setSuccess(false);
             response.setData(error.getCommodityNotExists());
             return gsonRating.toJson(response);
-            //throw new Exception(error.getCommodityNotExists());
         }
         else {
             String ratingKey = rating.getUsername() + "_" + rating.getCommodityId();
@@ -225,7 +207,6 @@ public class Baloot {
             response.setData("");
             return gsonRating.toJson(response);
         }
-        //return gsonRating.toJson(response);
     }
     public Map<String, User> getBalootUsers() {
         return balootUsers;
@@ -242,40 +223,45 @@ public class Baloot {
     public Map<String, Category> getBalootCategorySections() {
         return balootCategorySections;
     }
-
     public String checkUserCmd(String userInput) {
         String userCmd, userData;
         userCmd = userInput.substring(0, userInput.indexOf(" "));
         userData = userInput.substring(userInput.indexOf(" ")+1);
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
         Response response = new Response();
+
         if(userCmd.equals("addUser")) {
             User user = gson.fromJson(userData, User.class);
             return addUser(user);
         }
+
         else if(userCmd.equals("rateCommodity")) {
             Gson gsonCommodity = new GsonBuilder().create();
             Rating rating = gsonCommodity.fromJson(userData, Rating.class);
             return addRating(rating);
         }
+
         else if(userCmd.equals("addProvider")) {
             Provider provider = gson.fromJson(userData, Provider.class);
             return addProvider(provider);
         }
+
         else if(userCmd.equals("addToBuyList")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
             return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
         }
+
         else if(userCmd.equals("removeFromBuyList")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
             return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
         }
+
         else if(userCmd.equals("addCommodity")) {
             Gson gson2 = new GsonBuilder().create();
             Commodity commodity = gson2.fromJson(userData, Commodity.class);
             return addCommodity(commodity);
-            //balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
         }
+
         else if(userCmd.equals("getCommodityById")) {
             Gson gson2 = new GsonBuilder().create();
             JsonObject jObj = new Gson().fromJson(userData, JsonObject.class);
@@ -309,19 +295,18 @@ public class Baloot {
             jsonObjectOut.addProperty("success", true);
             jsonObjectOut.add("data", new Gson().toJsonTree(jsonObject));
             return gson2.toJson(jsonObjectOut);
-//            String resultData = jsonObject.toString();
-//            response.setSuccess(false);
-//            response.setData(resultData);
-//            return gson2.toJson(response);
         }
+
         else if(userCmd.equals("getCommoditiesByCategory")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
             return getCommoditiesByCategory(jsonObject.get("category").getAsString());
         }
+
         else if(userCmd.equals("getCommoditiesList")) {
             return getCommoditiesList();
         }
-        return " ";
+
+        return "Wrong command!";
     }
 
 }
