@@ -1,4 +1,6 @@
 package com.mehrani;
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 
 public class Commodity {
@@ -6,7 +8,7 @@ public class Commodity {
     private String name;
     private int providerId;
     private int price;
-    private ArrayList<String> categories; //creating a 'Category' might also be considered
+    private ArrayList<String> categories;
     private double rating;
     private int inStock;
     private int numOfRatings;

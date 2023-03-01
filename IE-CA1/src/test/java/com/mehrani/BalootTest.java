@@ -2,160 +2,113 @@ package com.mehrani;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
 public class BalootTest {
-    private Baloot baloot = new Baloot();
-    @Test
-    public void addUserTest() {
-        try {
-            User user = new User();
-            user.setUserData("ali", "123", "2001-05-06", "ali@b", "addr", 50);
-            baloot.addUser(user);
-            //System.out.println(baloot.getBalootUsers().size());
-            assertEquals(1, baloot.getBalootUsers().size());
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assert.fail();
-        }
+    private static Baloot baloot = new Baloot();
+
+    @BeforeClass
+    public static void setup() {
+        String result1=baloot.checkUserCmd("addUser {\"username\": \"user1\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result1);
+        String result2=baloot.checkUserCmd("addProvider {\"id\": 3, \"name\": \"provider1\", \"registryDate\": \"2023-09-15\"}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result2);
+        String result3=baloot.checkUserCmd("addProvider {\"id\": 6, \"name\": \"provider2\", \"registryDate\": \"2013-09-15\"}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result3);
+        String result4=baloot.checkUserCmd("addCommodity {\"id\": 1, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 50}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result4);
+        String result5=baloot.checkUserCmd("addCommodity {\"id\": 2, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 8.8, \"inStock\": 50}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result5);
+        String result6=baloot.checkUserCmd("addCommodity {\"id\": 3, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 8.8, \"inStock\": 50}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result6);
+        String result7=baloot.checkUserCmd("addCommodity {\"id\": 4, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 50}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result7);
+        String result8=baloot.checkUserCmd("addUser {\"username\": \"user2\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", result8);
+
     }
 
-    @Test
-    public void addExistingUserTest() {
-        try {
-            User user = new User();
-            User user2 = new User();
-            User user3 = new User();
-            User user4 = new User();
+    @AfterClass
+    public static void tearDown() {
 
-            user.setUserData("ali", "123", "2001-05-06", "ali@b", "addr", 50);
-            user2.setUserData("amir", "1234", "2001-06-06", "alin@b", "addr", 50);
-            user3.setUserData("ali", "1234", "2001-05-06", "ali@b", "addr", 50);
-            user4.setUserData("ahmad", "1234", "2001-05-06", "ali@b", "addr", 50);
-
-            baloot.addUser(user);
-            baloot.addUser(user2);
-            baloot.addUser(user3);
-            baloot.addUser(user4);
-            //System.out.println(baloot.getBalootUsers().size());
-            assertEquals("1234", baloot.getBalootUsers().get(user.getUsername()).getPassword());
-            assertEquals(3, baloot.getBalootUsers().size());
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assert.fail();
-        }
     }
 
-    @Test
-    public void ratingAddCmdTest() throws Exception {
-        try {
-            System.out.println(baloot.checkUserCmd("addUser {\"username\": \"user1\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}"));
-
-            System.out.println(baloot.checkUserCmd("addProvider {\"id\": 3, \"name\": \"provider1\", \"registryDate\": \"2023-09-15\"}"));
-            System.out.println(baloot.checkUserCmd("addCommodity {\"id\": 1, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 50}"));
-            System.out.println(baloot.checkUserCmd("addProvider {\"id\": 3, \"name\": \"provider2\", \"registryDate\": \"2013-09-15\"}"));
-            System.out.println(baloot.checkUserCmd("addCommodity {\"id\": 2, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 8.8, \"inStock\": 50}"));
-            System.out.println(baloot.checkUserCmd("addCommodity {\"id\": 3, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 8.8, \"inStock\": 50}"));
-            System.out.println(baloot.checkUserCmd("addCommodity {\"id\": 4, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 50}"));
-
-           // System.out.println(baloot.checkUserCmd("getCommoditiesByCategory {\"category\": \"Technology\"}"));
-
-            System.out.println("provider name : " + baloot.getBalootProviders().get(3).getName() + " provider reg date : " + baloot.getBalootProviders().get(3).getRegistryDate().toString());
-
-            assertEquals(true, baloot.getBalootUsers().size()==1 && baloot.getBalootUsers().containsKey("user1"));
-            assertEquals(true, baloot.getBalootProviders().size()==1 && baloot.getBalootProviders().containsKey(3));
-            assertEquals(true, baloot.getBalootProviders().get(3).getName().equals("provider2"));
-            //assertEquals(true, baloot.getBalootCommodities().size()==3 && baloot.getBalootCommodities().containsKey(1));
-            assertEquals(baloot.getBalootCommodities().get(1).getRating(), baloot.getBalootProviders().get(3).getAvgCommoditiesRate(), 0.01);
-
-            //baloot.checkUserCmd("addCommodity {\"id\": 2, \"name\": \"Headphone2\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 1.2, \"inStock\": 50}");
-            //assertEquals(5, baloot.getBalootProviders().get(3).getAvgCommoditiesRate(), 0.000000001);
-            //assertEquals(2, baloot.getBalootCategorySections().size());
-            //assertEquals(2, baloot.getBalootCategorySections().get("Technology").getCommodities().size());
-            //assertEquals(2, baloot.getBalootCategorySections().get("Phone").getCommodities().size());
-            System.out.println(baloot.getBalootCategorySections().get("Technology").getCommodities().toString());
-            //            User user = new User();
-//            user.setUserData("user1", "123", "2001-05-06", "ali@b", "addr", 50);
-//            baloot.addUser(user);
-//
-//            Provider provider = new Provider();
-//            provider.setData(1, "ocso", "2001-05-06", false);
-//            baloot.addProvider(provider);
-//            System.out.println(baloot.getBalootProviders().size());
-//
-//            ArrayList<String> categories = new ArrayList<>();
-//            categories.add("tech");
-//            Commodity commodity = new Commodity(3, "caj", 1, 1, categories, 3.5, 10);
-//            baloot.addCommodity(commodity);
-//
-//            baloot.checkUserCmd("rateCommodity", "{\"username\": \"user1\", \"commodityId\": 3, \"score\": 7}");
-
-        } catch(Exception e) {
-            System.out.println(e.getMessage());
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void wrongUsernameTest() throws Exception {
-        System.out.println(baloot.getBalootUsers().size());
-        User user = new User();
-        user.setUserData("a#li", "123", "2001-05-06", "ali@b", "addr", 50);
-        baloot.addUser(user);
-    }
     @Test
     public void addRatingTest() {
-        try {
-            User user = new User();
-            user.setUserData("user1", "123", "2001-05-06", "ali@b", "addr", 50);
-            baloot.addUser(user);
+        Error error = new Error();
+        String res1=baloot.checkUserCmd("rateCommodity {\"username\": \"user1\", \"commodityId\": 3, \"score\": 7}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res1);
 
-            User user2 = new User();
-            user2.setUserData("user2", "123", "2001-05-06", "ali@b", "addr", 50);
-            baloot.addUser(user2);
+        String res2=baloot.checkUserCmd("rateCommodity {\"username\": \"user3\", \"commodityId\": 3, \"score\": 7}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getUserNotExists() + "\"}", res2);
 
-            Provider provider = new Provider();
-            provider.setData(1, "ocso", "2001-05-06", false);
-            baloot.addProvider(provider);
-            System.out.println(baloot.getBalootProviders().size());
+        String res3=baloot.checkUserCmd("rateCommodity {\"username\": \"user1\", \"commodityId\": 5, \"score\": 7}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getCommodityNotExists() + "\"}", res3);
 
-            ArrayList<String> categories = new ArrayList<>();
-            categories.add("tech");
-            categories.add("techvd");
-            Commodity commodity = new Commodity(3, "caj", 1, 1, categories, 3.5, 10);
-            baloot.addCommodity(commodity);
-            Rating rating = new Rating();
-            rating.setData("user1", 3, 7);
-            baloot.addRating(rating);
+        String res4=baloot.checkUserCmd("rateCommodity {\"username\": \"user1\", \"commodityId\": 3, \"score\": 12}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getRatingOutOfRange(12) + "\"}", res4);
 
-            String res=baloot.checkUserCmd("getCommodityById {\"id\": 3}");
-            String res2=baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 3}");
-            String res3=baloot.checkUserCmd("addToBuyList {\"username\": \"user2\", \"commodityId\": 3}");
-            assertEquals(true, baloot.getBalootUsers().get("user1").itemExistsInBuyList(3));
-            //String res4=baloot.checkUserCmd("addToBuyList {\"username\": \"user2\", \"commodityId\": 3}");
-            System.out.println("data 2 : " + res2);
-            System.out.println("data : " + res);
+        String res5=baloot.checkUserCmd("rateCommodity {\"username\": \"user2\", \"commodityId\": 3, \"score\": 5}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res5);
+        assertEquals(6, baloot.getBalootCommodities().get(3).getRating(), 0.01);
 
-        }
-        catch(Exception e) {
-            System.out.println(e.getMessage());
-            Assert.fail();
-        }
     }
-//    @Before
-//    public void setUp() throws Exception {
-//    }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//    }
+
+    @Test
+    public void addRemoveToBuyListTest() {
+        Error error = new Error();
+        String res1 = baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 4}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res1);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res2 = baloot.checkUserCmd("addToBuyList {\"username\": \"user5\", \"commodityId\": 4}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getUserNotExists() + "\"}", res2);
+
+        String res3 = baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 6}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getCommodityNotExists() + "\"}", res3);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res4 = baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 4}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getProductAlreadyExistsInBuyList() + "\"}", res4);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res6 = baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 2}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res6);
+        assertEquals(2, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res5 = baloot.checkUserCmd("removeFromBuyList {\"username\": \"user1\", \"commodityId\": 4}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res5);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res7 = baloot.checkUserCmd("removeFromBuyList {\"username\": \"user1\", \"commodityId\": 4}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getProductNotInBuyList() + "\"}", res7);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res8 = baloot.checkUserCmd("removeFromBuyList {\"username\": \"user6\", \"commodityId\": 4}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getUserNotExists() + "\"}", res8);
+
+        String res9 = baloot.checkUserCmd("removeFromBuyList {\"username\": \"user1\", \"commodityId\": 10}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getCommodityNotExists() + "\"}", res9);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+        String res10 = baloot.checkUserCmd("removeFromBuyList {\"username\": \"user1\", \"commodityId\": 2}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res10);
+        assertEquals(0, baloot.getBalootUsers().get("user1").getBuyList().size());
+
+    }
+
+    @Test
+    public void findCommodityByIdTest() {
+        Error error = new Error();
+        String res1 = baloot.checkUserCmd("getCommodityById {\"id\": 2}");
+        assertEquals("{\"success\":true,\"data\":{\"id\":2,\"name\":\"Headphone\",\"provider\":\"provider1\",\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":8.8}}", res1);
+
+        String res2 = baloot.checkUserCmd("getCommodityById {\"id\": 6}");
+        assertEquals("{\"success\":false,\"data\":\"" + error.getCommodityNotExists() + "\"}", res2);
+
+    }
 }
