@@ -21,7 +21,7 @@ public class Commodity {
         this.categories = categories;
         this.rating = rating;
         this.inStock = inStock;
-        this.numOfRatings = 1; //a primary rating is given as function argument
+        this.numOfRatings = 1;
     }
     public void setId(int id) {
         this.id = id;

@@ -123,7 +123,6 @@ public class Baloot {
                 response.setSuccess(false);
                 response.setData(error.getProductAlreadyExistsInBuyList());
                 return gsonaddRemove.toJson(response);
-                //throw new Exception(error.getProductAlreadyExistsInBuyList());
             }
             else {
                 balootUsers.get(username).removeFromBuyList(commodityId);
