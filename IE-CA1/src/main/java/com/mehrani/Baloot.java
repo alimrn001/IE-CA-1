@@ -79,8 +79,19 @@ public class Baloot {
             throw new Exception(error.getCommodityNotExists());
     }
 
-    public void addProvider(Provider provider) throws Exception { // exception is necessary ???
-        balootProviders.put(provider.getId(), provider);
+    public String addProvider(Provider provider) throws Exception { // exception is necessary ???
+        Response response = new Response();
+        if(providerExists(provider.getId())) {
+            balootProviders.get(provider.getId()).setName(provider.getName());
+            balootProviders.get(provider.getId()).setRegistryDate(provider.getRegistryDate().toString());
+        }
+        else
+            balootProviders.put(provider.getId(), provider);
+
+        response.setSuccess(true);
+        response.setData("Provider Added.");
+        Gson gsonProvider = new GsonBuilder().create();
+        return gsonProvider.toJson(response);
     }
     public String addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
         if(!userExists(username))
@@ -165,18 +176,13 @@ public class Baloot {
             addUser(user);
         }
         else if(userCmd.equals("rateCommodity")) {
-            Gson gson2 = new GsonBuilder().create();
-            Rating rating = gson2.fromJson(userData, Rating.class);
+            Gson gsonCmdt = new GsonBuilder().create();
+            Rating rating = gsonCmdt.fromJson(userData, Rating.class);
             addRating(rating);
         }
         else if(userCmd.equals("addProvider")) {
             Provider provider = gson.fromJson(userData, Provider.class);
-            if(providerExists(provider.getId())) {
-                balootProviders.get(provider.getId()).setName(provider.getName());
-                balootProviders.get(provider.getId()).setRegistryDate(provider.getRegistryDate().toString());
-            }
-            else
-                addProvider(provider);
+            addProvider(provider);
         }
         else if(userCmd.equals("addToBuyList")) {
             JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);

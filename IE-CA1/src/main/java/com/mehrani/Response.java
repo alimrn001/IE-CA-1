@@ -1,17 +1,17 @@
 package com.mehrani;
 
 public class Response {
-    private boolean status;
+    private boolean success;
     private String data;
 
     public void setData(String data) {
         this.data = data;
     }
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setSuccess(boolean status) {
+        this.success = status;
     }
-    public boolean getStatus() {
-        return status;
+    public boolean getSuccess() {
+        return success;
     }
     public String getData() {
         return data;
