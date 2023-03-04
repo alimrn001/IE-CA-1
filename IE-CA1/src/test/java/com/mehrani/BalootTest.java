@@ -29,7 +29,6 @@ public class BalootTest {
         assertEquals("{\"success\":true,\"data\":\"\"}", result7);
         String result8=baloot.checkUserCmd("addUser {\"username\": \"user2\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result8);
-
     }
 
     @AfterClass
@@ -99,6 +98,10 @@ public class BalootTest {
         assertEquals("{\"success\":true,\"data\":\"\"}", res10);
         assertEquals(0, baloot.getBalootUsers().get("user1").getBuyList().size());
 
+        String res11 = baloot.checkUserCmd("addToBuyList {\"username\": \"user1\", \"commodityId\": 2}");
+        assertEquals("{\"success\":true,\"data\":\"\"}", res11);
+        assertEquals(1, baloot.getBalootUsers().get("user1").getBuyList().size());
+
     }
 
     @Test
@@ -113,8 +116,20 @@ public class BalootTest {
     }
 
     @Test
-    public void getCommoditiesByCategory() {
+    public void getCommoditiesByCategoryTest() {
         String res1 = baloot.getCommoditiesByCategory("Technology");
         System.out.println(res1);
+    }
+
+    @Test
+    public void getCommodityList() {
+        String res1 = baloot.getCommoditiesList();
+        assertEquals(res1, "{\"success\":true,\"data\":{\"commoditiesList\":[{\"id\":1,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone\"],\"rating\":8.8},{\"id\":2,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":8.8},{\"id\":3,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":8.8},{\"id\":4,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone\"],\"rating\":8.8}]}}");
+    }
+
+    @Test
+    public void getBuyListTest() {
+        String result = baloot.checkUserCmd("getBuyList {\"username\": \"user1\"}");
+        System.out.println(result);
     }
 }

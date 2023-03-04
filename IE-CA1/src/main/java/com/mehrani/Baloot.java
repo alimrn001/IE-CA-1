@@ -2,6 +2,7 @@ package com.mehrani;
 
 import com.google.gson.*;
 
+import javax.print.attribute.standard.JobName;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,21 +178,86 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return responseObject.toString();
     }
-    public String getCommoditiesList() {
-        List<Commodity> commodityList = new ArrayList<Commodity>();
-        JsonArray list = new JsonArray();
-        JsonObject test = new JsonObject();
-        for (Commodity commodity : balootCommodities.values()) {
-            commodityList.add(commodity);
-        }
-        JsonObject commListObj = new JsonObject();
-        Gson gsonCommList = new GsonBuilder().create();
-        String gsonListStr = gsonCommList.toJson(commodityList);
-        commListObj.addProperty("commoditiesList", gsonListStr);
+    public String getCommodityById(int commodityId) {
         Response response = new Response();
-        response.setSuccess(true);
-        response.setData(gsonCommList.toJson(commListObj));
-        return gsonCommList.toJson(response);
+        Gson gsonObj = new GsonBuilder().create();
+        JsonObject responseObj = new JsonObject();
+        if(!commodityExists(commodityId)) {
+            response.setSuccess(false);
+            response.setData(new Error().getCommodityNotExists());
+            return gsonObj.toJson(response);
+        }
+        Commodity commodity = balootCommodities.get(commodityId);
+        JsonArray commoditiesList = new JsonArray();
+        for(String category : commodity.getCategories())
+            commoditiesList.add(new JsonPrimitive(category));
+
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("id", commodity.getId());
+        jsonObj.addProperty("name", commodity.getName());
+        String providerName = balootProviders.get(commodity.getProviderId()).getName();
+        jsonObj.addProperty("provider", providerName);
+        jsonObj.addProperty("price", commodity.getPrice());
+        jsonObj.add("categories", commoditiesList);
+        jsonObj.addProperty("rating", commodity.getRating());
+
+        responseObj.addProperty("success", true);
+        responseObj.add("data", new Gson().toJsonTree(jsonObj));
+        return responseObj.toString();
+    }
+    public String getCommoditiesList() {
+        Gson gson = new GsonBuilder().create();
+        JsonObject responseObject = new JsonObject();
+        JsonObject commoditiesListObject = new JsonObject();
+        JsonArray commoditiesList = new JsonArray();
+        for(Commodity commodity : balootCommodities.values()) {
+            JsonObject commObject = new JsonObject();
+            commObject.addProperty("id", commodity.getId());
+            commObject.addProperty("name", commodity.getName());
+            commObject.addProperty("providerId", commodity.getProviderId());
+            commObject.addProperty("price", commodity.getPrice());
+            JsonArray categoryList = new JsonArray();
+            for(String ctgr : commodity.getCategories())
+                categoryList.add(new JsonPrimitive(ctgr));
+            commObject.add("categories", categoryList);
+            commObject.addProperty("rating", commodity.getRating());
+            commoditiesList.add(commObject);
+        }
+
+        commoditiesListObject.add("commoditiesList", commoditiesList);
+        responseObject.addProperty("success", true);
+        responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
+        return gson.toJson(responseObject);
+    }
+    public String getBuyList(String username) {
+        ArrayList<Integer> userBuyList = balootUsers.get(username).getBuyList();
+        Gson gson = new GsonBuilder().create();
+        JsonObject responseObject = new JsonObject();
+        JsonObject commoditiesListObject = new JsonObject();
+        JsonArray commoditiesList = new JsonArray();
+        if(!userExists(username)) {
+            Response response = new Response();
+            response.setSuccess(false);
+            response.setData(new Error().getUserNotExists());
+            return gson.toJson(response);
+        }
+        for(int i : userBuyList) {
+            Commodity commodity = balootCommodities.get(i);
+            JsonObject commodityObj = new JsonObject();
+            commodityObj.addProperty("id", commodity.getId());
+            commodityObj.addProperty("name", commodity.getName());
+            commodityObj.addProperty("providerId", commodity.getProviderId());
+            commodityObj.addProperty("price", commodity.getPrice());
+            JsonArray categoryList = new JsonArray();
+            for(String ctgr : commodity.getCategories())
+                categoryList.add(new JsonPrimitive(ctgr));
+            commodityObj.addProperty("rating", commodity.getRating());
+            commoditiesList.add(commodityObj);
+        }
+        commoditiesListObject.add("buyList", commoditiesList);
+        responseObject.addProperty("success", true);
+        responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
+        return gson.toJson(responseObject);
     }
     public String addRating(Rating rating) {
         Response response = new Response();
@@ -270,44 +336,14 @@ public class Baloot {
         }
 
         else if(userCmd.equals("addCommodity")) {
-            Gson gson2 = new GsonBuilder().create();
-            Commodity commodity = gson2.fromJson(userData, Commodity.class);
+            Gson gson_ = new GsonBuilder().create();
+            Commodity commodity = gson_.fromJson(userData, Commodity.class);
             return addCommodity(commodity);
         }
 
         else if(userCmd.equals("getCommodityById")) {
-            Gson gson2 = new GsonBuilder().create();
-            JsonObject jObj = new Gson().fromJson(userData, JsonObject.class);
-            int commodityId = jObj.get("id").getAsInt();
-            if(!commodityExists(commodityId)) {
-                response.setSuccess(false);
-                response.setData(error.getCommodityNotExists());
-                return gson2.toJson(response);
-            }
-
-            Commodity commodity = balootCommodities.get(commodityId);
-            Commodity tmp = commodity;
-            String jsonRes = gson2.toJson(commodity, Commodity.class);
-            JsonObject jsonObject = JsonParser.parseString(jsonRes).getAsJsonObject();
-            jsonObject.remove("providerId");
-            jsonObject.remove("price");
-            jsonObject.remove("categories");
-            jsonObject.remove("rating");
-            jsonObject.remove("inStock");
-            jsonObject.remove("numOfRatings");
-            jsonObject.addProperty("provider", balootProviders.get(tmp.getProviderId()).getName());
-            jsonObject.addProperty("price", tmp.getPrice());
-            JsonArray categories = new JsonArray();
-            for(String category : tmp.getCategories()) {
-                categories.add(new JsonPrimitive(category));
-            }
-            jsonObject.add("categories", categories);
-            jsonObject.addProperty("rating", tmp.getRating());
-
-            JsonObject jsonObjectOut = new JsonObject();
-            jsonObjectOut.addProperty("success", true);
-            jsonObjectOut.add("data", new Gson().toJsonTree(jsonObject));
-            return gson2.toJson(jsonObjectOut);
+            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+            return getCommodityById(jsonObject.get("id").getAsInt());
         }
 
         else if(userCmd.equals("getCommoditiesByCategory")) {
@@ -317,6 +353,12 @@ public class Baloot {
 
         else if(userCmd.equals("getCommoditiesList")) {
             return getCommoditiesList();
+        }
+
+        else if (userCmd.equals("getBuyList")) {
+            System.out.println("here");
+            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+            return getBuyList(jsonObject.get("username").getAsString());
         }
 
         return "Wrong command!";
