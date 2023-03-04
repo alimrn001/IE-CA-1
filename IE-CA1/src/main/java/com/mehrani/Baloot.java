@@ -146,22 +146,36 @@ public class Baloot {
         return gsonaddRemove.toJson(response);
     }
     public String getCommoditiesByCategory(String category) {
-        if(!categoryExists(category))
-            return "[]";
-        ArrayList<Integer> products = balootCategorySections.get(category).getCommodities();
-        List<Commodity> objList = new ArrayList<Commodity>();
-        int cnt=0;
-        for (int i: products) {
-            balootCommodities.get(i);
-            objList.add(balootCommodities.get(i));
-            cnt++;
+        Response response = new Response();
+        JsonObject responseObject = new JsonObject();
+        JsonObject commoditiesListObject = new JsonObject();
+        if(!categoryExists(category)) {
+            JsonArray emptyCommodityList = new JsonArray();
+            commoditiesListObject.add("commoditiesListByCategory", emptyCommodityList);
+            responseObject.addProperty("success", true);
+            responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
+            return responseObject.toString();
         }
-        String result = new Gson().toJson(objList);
-        JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
 
-        jsonObject.remove("inStock");
-        jsonObject.remove("numOfRatings");
-        return jsonObject.toString();
+        JsonArray commoditiesList = new JsonArray();
+        for (int commId :balootCategorySections.get(category).getCommodities()) {
+            JsonObject commObj = new JsonObject();
+            Commodity commodity = balootCommodities.get(commId);
+            commObj.addProperty("id", commodity.getId());
+            commObj.addProperty("name", commodity.getName());
+            commObj.addProperty("providerId", commodity.getProviderId());
+            commObj.addProperty("price", commodity.getPrice());
+            JsonArray categoriesList = new JsonArray();
+            for(String itemCategory : commodity.getCategories())
+                categoriesList.add(new JsonPrimitive(itemCategory));
+            commObj.add("categories", categoriesList);
+            commObj.addProperty("rating", commodity.getRating());
+            commoditiesList.add(commObj);
+        }
+        commoditiesListObject.add("commoditiesListByCategory", commoditiesList);
+        responseObject.addProperty("success", true);
+        responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
+        return responseObject.toString();
     }
     public String getCommoditiesList() {
         List<Commodity> commodityList = new ArrayList<Commodity>();

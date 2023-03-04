@@ -111,4 +111,10 @@ public class BalootTest {
         assertEquals("{\"success\":false,\"data\":\"" + error.getCommodityNotExists() + "\"}", res2);
 
     }
+
+    @Test
+    public void getCommoditiesByCategory() {
+        String res1 = baloot.getCommoditiesByCategory("Technology");
+        System.out.println(res1);
+    }
 }
