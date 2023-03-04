@@ -19,16 +19,18 @@ public class BalootTest {
         assertEquals("{\"success\":true,\"data\":\"\"}", result2);
         String result3=baloot.checkUserCmd("addProvider {\"id\": 6, \"name\": \"provider2\", \"registryDate\": \"2013-09-15\"}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result3);
-        String result4=baloot.checkUserCmd("addCommodity {\"id\": 1, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 50}");
+        String result4=baloot.checkUserCmd("addCommodity {\"id\": 1, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8, \"inStock\": 50}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result4);
-        String result5=baloot.checkUserCmd("addCommodity {\"id\": 2, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 8.8, \"inStock\": 50}");
+        String result5=baloot.checkUserCmd("addCommodity {\"id\": 2, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 5, \"inStock\": 50}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result5);
-        String result6=baloot.checkUserCmd("addCommodity {\"id\": 3, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 8.8, \"inStock\": 50}");
+        String result6=baloot.checkUserCmd("addCommodity {\"id\": 3, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone2\"], \"rating\": 6.5, \"inStock\": 50}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result6);
-        String result7=baloot.checkUserCmd("addCommodity {\"id\": 4, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 8.8, \"inStock\": 50}");
+        String result7=baloot.checkUserCmd("addCommodity {\"id\": 4, \"name\": \"Headphone\", \"providerId\": 3, \"price\": 35000, \"categories\": [\"Technology\", \"Phone\"], \"rating\": 7, \"inStock\": 50}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result7);
         String result8=baloot.checkUserCmd("addUser {\"username\": \"user2\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result8);
+
+        assertEquals(6.625, baloot.getBalootProviders().get(3).getAvgCommoditiesRate(), 0.000001);
     }
 
     @AfterClass
@@ -108,7 +110,7 @@ public class BalootTest {
     public void findCommodityByIdTest() {
         Error error = new Error();
         String res1 = baloot.checkUserCmd("getCommodityById {\"id\": 2}");
-        assertEquals("{\"success\":true,\"data\":{\"id\":2,\"name\":\"Headphone\",\"provider\":\"provider1\",\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":8.8}}", res1);
+        assertEquals("{\"success\":true,\"data\":{\"id\":2,\"name\":\"Headphone\",\"provider\":\"provider1\",\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":5.0}}", res1);
 
         String res2 = baloot.checkUserCmd("getCommodityById {\"id\": 6}");
         assertEquals("{\"success\":false,\"data\":\"" + error.getCommodityNotExists() + "\"}", res2);
@@ -117,14 +119,14 @@ public class BalootTest {
 
     @Test
     public void getCommoditiesByCategoryTest() {
-        String res1 = baloot.getCommoditiesByCategory("Technology");
+        String res1 = baloot.checkUserCmd("getCommoditiesByCategory {\"category\": \"Vegetables\"}\n");
         System.out.println(res1);
     }
 
     @Test
     public void getCommodityList() {
-        String res1 = baloot.getCommoditiesList();
-        assertEquals(res1, "{\"success\":true,\"data\":{\"commoditiesList\":[{\"id\":1,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone\"],\"rating\":8.8},{\"id\":2,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":8.8},{\"id\":3,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":8.8},{\"id\":4,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone\"],\"rating\":8.8}]}}");
+        String res1 = baloot.checkUserCmd("getCommoditiesList");
+        assertEquals(res1, "{\"success\":true,\"data\":{\"commoditiesList\":[{\"id\":1,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone\"],\"rating\":8.0},{\"id\":2,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":5.0},{\"id\":3,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone2\"],\"rating\":6.5},{\"id\":4,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"categories\":[\"Technology\",\"Phone\"],\"rating\":7.0}]}}");
     }
 
     @Test

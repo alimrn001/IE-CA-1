@@ -303,62 +303,61 @@ public class Baloot {
         return balootCategorySections;
     }
     public String checkUserCmd(String userInput) {
+
         String userCmd, userData;
-        userCmd = userInput.substring(0, userInput.indexOf(" "));
-        userData = userInput.substring(userInput.indexOf(" ")+1);
+        if(!userInput.contains(" ")) {
+            userCmd = userInput;
+            userData = "";
+        }
+        else {
+            userCmd = userInput.substring(0, userInput.indexOf(" "));
+            userData = userInput.substring(userInput.indexOf(" ") + 1);
+        }
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-        Response response = new Response();
 
-        if(userCmd.equals("addUser")) {
-            User user = gson.fromJson(userData, User.class);
-            return addUser(user);
-        }
 
-        else if(userCmd.equals("rateCommodity")) {
-            Gson gsonCommodity = new GsonBuilder().create();
-            Rating rating = gsonCommodity.fromJson(userData, Rating.class);
-            return addRating(rating);
-        }
-
-        else if(userCmd.equals("addProvider")) {
-            Provider provider = gson.fromJson(userData, Provider.class);
-            return addProvider(provider);
-        }
-
-        else if(userCmd.equals("addToBuyList")) {
-            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
-        }
-
-        else if(userCmd.equals("removeFromBuyList")) {
-            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
-        }
-
-        else if(userCmd.equals("addCommodity")) {
-            Gson gson_ = new GsonBuilder().create();
-            Commodity commodity = gson_.fromJson(userData, Commodity.class);
-            return addCommodity(commodity);
-        }
-
-        else if(userCmd.equals("getCommodityById")) {
-            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            return getCommodityById(jsonObject.get("id").getAsInt());
-        }
-
-        else if(userCmd.equals("getCommoditiesByCategory")) {
-            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            return getCommoditiesByCategory(jsonObject.get("category").getAsString());
-        }
-
-        else if(userCmd.equals("getCommoditiesList")) {
-            return getCommoditiesList();
-        }
-
-        else if (userCmd.equals("getBuyList")) {
-            System.out.println("here");
-            JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-            return getBuyList(jsonObject.get("username").getAsString());
+        switch (userCmd) {
+            case "addUser" -> {
+                User user = gson.fromJson(userData, User.class);
+                return addUser(user);
+            }
+            case "rateCommodity" -> {
+                Gson gsonCommodity = new GsonBuilder().create();
+                Rating rating = gsonCommodity.fromJson(userData, Rating.class);
+                return addRating(rating);
+            }
+            case "addProvider" -> {
+                Provider provider = gson.fromJson(userData, Provider.class);
+                return addProvider(provider);
+            }
+            case "addToBuyList" -> {
+                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+                return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
+            }
+            case "removeFromBuyList" -> {
+                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+                return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
+            }
+            case "addCommodity" -> {
+                Gson gson_ = new GsonBuilder().create();
+                Commodity commodity = gson_.fromJson(userData, Commodity.class);
+                return addCommodity(commodity);
+            }
+            case "getCommodityById" -> {
+                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+                return getCommodityById(jsonObject.get("id").getAsInt());
+            }
+            case "getCommoditiesByCategory" -> {
+                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+                return getCommoditiesByCategory(jsonObject.get("category").getAsString());
+            }
+            case "getCommoditiesList" -> {
+                return getCommoditiesList();
+            }
+            case "getBuyList" -> {
+                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+                return getBuyList(jsonObject.get("username").getAsString());
+            }
         }
 
         return "Wrong command!";
