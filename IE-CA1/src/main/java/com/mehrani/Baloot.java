@@ -21,15 +21,19 @@ public class Baloot {
     public boolean commodityExists(int commodityId) {
         return balootCommodities.containsKey(commodityId);
     }
+
     public boolean userExists(String username) {
         return balootUsers.containsKey(username);
     }
+
     public boolean categoryExists(String category) {
         return balootCategorySections.containsKey(category);
     }
+
     public boolean providerExists(int providerId) {
         return balootProviders.containsKey(providerId);
     }
+
     public void updateCategorySection(String categoryName, int commodityId) {
         if(balootCategorySections.containsKey(categoryName)) {
             balootCategorySections.get(categoryName).addCommodityToCategory(commodityId);
@@ -41,6 +45,7 @@ public class Baloot {
             balootCategorySections.put(categoryName, category);
         }
     }
+
     public String addUser(User user) {
         Response response = new Response();
         Gson gsonProvider = new GsonBuilder().create();
@@ -63,6 +68,7 @@ public class Baloot {
         }
         return gsonProvider.toJson(response);
     }
+
     public String addCommodity(Commodity commodity) {
         Gson gsonCommodity = new GsonBuilder().create();
         Response response = new Response();
@@ -88,6 +94,7 @@ public class Baloot {
         }
         return gsonCommodity.toJson(response);
     }
+
     public String addProvider(Provider provider) {
         Response response = new Response();
         if(providerExists(provider.getId())) {
@@ -101,6 +108,7 @@ public class Baloot {
         Gson gsonProvider = new GsonBuilder().create();
         return gsonProvider.toJson(response);
     }
+
     public String addRemoveBuyList(String username, int commodityId, boolean isAdding) {
         Response response = new Response();
         Gson gsonaddRemove = new GsonBuilder().create();
@@ -146,6 +154,7 @@ public class Baloot {
         balootCommodities.get(commodityId).reduceInStock(1);
         return gsonaddRemove.toJson(response);
     }
+
     public String getCommoditiesByCategory(String category) {
         Response response = new Response();
         JsonObject responseObject = new JsonObject();
@@ -178,6 +187,7 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return responseObject.toString();
     }
+
     public String getCommodityById(int commodityId) {
         Response response = new Response();
         Gson gsonObj = new GsonBuilder().create();
@@ -205,6 +215,7 @@ public class Baloot {
         responseObj.add("data", new Gson().toJsonTree(jsonObj));
         return responseObj.toString();
     }
+
     public String getCommoditiesList() {
         Gson gson = new GsonBuilder().create();
         JsonObject responseObject = new JsonObject();
@@ -229,6 +240,7 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return gson.toJson(responseObject);
     }
+
     public String getBuyList(String username) {
         ArrayList<Integer> userBuyList = balootUsers.get(username).getBuyList();
         Gson gson = new GsonBuilder().create();
@@ -259,6 +271,7 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return gson.toJson(responseObject);
     }
+
     public String addRating(Rating rating) {
         Response response = new Response();
         Gson gsonRating = new GsonBuilder().create();
@@ -287,21 +300,27 @@ public class Baloot {
             return gsonRating.toJson(response);
         }
     }
+
     public Map<String, User> getBalootUsers() {
         return balootUsers;
     }
+
     public Map<Integer, Commodity> getBalootCommodities() {
         return balootCommodities;
     }
+
     public Map<Integer, Provider> getBalootProviders() {
         return balootProviders;
     }
+
     public Map<String, Rating> getBalootRatings() {
         return balootRatings;
     }
+
     public Map<String, Category> getBalootCategorySections() {
         return balootCategorySections;
     }
+
     public String checkUserCmd(String userInput) {
 
         String userCmd, userData;
